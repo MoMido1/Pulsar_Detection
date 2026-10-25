@@ -1,43 +1,62 @@
-# Pulsar Detection
+# Pulsar Candidate Classification
 
-A machine-learning coursework project exploring classification of pulsar candidates in an imbalanced dataset. The work focuses on feature analysis, data transformation, dimensionality reduction, probabilistic classification, and comparing classifiers under different evaluation settings.
+A machine-learning coursework project exploring classification of pulsar candidates in an imbalanced binary dataset. It compares probabilistic and margin-based classifiers and reports accuracy and detection-cost metrics.
 
-## Project contents
+## Current evaluation workflow
 
-- [Report.pdf](Report.pdf) — project report describing the motivation, methodology, and results.
-- [main.py](main.py) — main analysis and experiment workflow.
-- The modules and Library directories contain classifier implementations and supporting utilities used by the project.
-- The scripts expect input data under data/; check the referenced file paths before running.
+The default `main.py` has been revised to provide a more reliable, reproducible evaluation path:
 
-## Methodology covered
+- Reads comma-separated numeric data from `data/Train.txt` and `data/Test.txt`; the final column must be the binary label (0 or 1).
+- Applies Gaussianization with a quantile transform and PCA with four components.
+- Fits preprocessing separately inside each cross-validation fold, avoiding the previous full-dataset preprocessing leakage.
+- Compares Gaussian Naive Bayes, logistic regression, linear SVM, RBF SVM, and class-conditional Gaussian mixture models (GMMs).
+- Fits score calibration using out-of-fold training predictions rather than in-sample scores.
+- Uses the supplied test set only for final evaluation and reports accuracy, raw-score minDCF, calibrated actual DCF, and calibrated minDCF.
 
-The code and report cover the following areas:
+Preprocessing and calibration are learned from the training set only. No reported metrics are hard-coded in this README; run the script in the target environment to obtain results.
 
-- Exploratory analysis of feature distributions and class imbalance
-- Feature normalization / Gaussianization steps
-- Principal Component Analysis (PCA)
-- Comparison of classifiers, including Gaussian models, logistic regression, SVM variants, and Gaussian Mixture Models
-- Score calibration and evaluation of classification results
+## Run
 
-Consult the report and source code for the exact experimental settings and metrics. This README does not name a best-performing classifier or numerical score without summarizing the corresponding results from the report.
+Use Python 3.10 or newer in a virtual environment:
 
-## Running the project
+```bash
+python -m venv .venv
+```
 
-The main script loads training and test data from paths under data/ and imports scientific Python packages, plotting tools, and project-local modules. Before running it:
+Activate it, then install dependencies:
 
-1. Check that the expected data files exist at the paths referenced by main.py.
-2. Install the required Python dependencies in an isolated environment.
-3. Run the script from the repository root so relative paths resolve as expected.
+```bash
+python -m pip install -r requirements.txt
+python main.py
+```
 
-The repository does not currently document a verified, pinned environment here. For reproducibility, record the tested Python version and dependency versions before relying on results in a new environment.
+Optional arguments:
 
-## Notes and limitations
+```bash
+python main.py --train data/Train.txt --test data/Test.txt --prior 0.5
+```
 
-This is an experimental analysis project rather than a packaged prediction service. Results depend on the data split, preprocessing, calibration, and evaluation protocol. Treat the report as the source for the original experimental conclusions and inspect the implementation before reusing it.
+The `--prior` value must be strictly between 0 and 1. The data files must contain finite numeric values, at least four features, and both binary classes in each split.
 
-## Future improvements
+## Metrics and interpretation
 
-- Add a dependency file with tested versions.
-- Document the dataset source, license, and expected file layout.
-- Provide a single command for reproducing the main experiments.
-- Summarize key metrics from the report with the evaluation protocol and class-imbalance context.
+- **Accuracy** is calculated from predictions made using calibrated scores and the requested target prior.
+- **minDCF** sweeps score thresholds to find the minimum normalized detection cost for the selected prior.
+- **actual DCF** evaluates calibrated scores at the Bayes threshold for that prior.
+
+The test split is a single held-out evaluation set. If you use it to choose a model or tune hyperparameters, its metrics become selection-biased; use a separate validation protocol for model selection and reserve a final test set for one final report.
+
+## Repository contents
+
+- `main.py` — current leakage-safe comparison and evaluation workflow.
+- `modules/` and `Library/` — original coursework implementations and utility functions.
+- `data/Train.txt`, `data/Test.txt` — supplied training and test splits.
+- `Report.pdf` — original coursework report.
+
+The revised workflow uses scikit-learn estimators and does not reproduce every plot or every experiment from the original report. Treat the PDF as a record of the original coursework, not as evidence that its historical metrics have been regenerated by the current script.
+
+## Data, report, and limitations
+
+This repository contains dataset files and a coursework report. Confirm the dataset's redistribution terms and any applicable university/course restrictions before using the repository as a public portfolio artifact. The source and licensing details have not been independently verified here.
+
+This is an experimental classification project, not a production pulsar-analysis system. Results depend on the supplied split, preprocessing choices, classifier settings, and calibration protocol. The GMM implementation and model comparisons should be treated as a baseline rather than a tuned benchmark.
