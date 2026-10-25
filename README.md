@@ -38,6 +38,12 @@ python main.py --train data/Train.txt --test data/Test.txt --prior 0.5
 
 The `--prior` value must be strictly between 0 and 1. The data files must contain finite numeric values, at least four features, and both binary classes in each split.
 
+Run the small unit tests for the dataset loader and DCF metrics with:
+
+```bash
+python -m unittest discover -s tests
+```
+
 ## Metrics and interpretation
 
 - **Accuracy** is calculated from predictions made using calibrated scores and the requested target prior.
@@ -49,6 +55,8 @@ The test split is a single held-out evaluation set. If you use it to choose a mo
 ## Repository contents
 
 - `main.py` — current leakage-safe comparison and evaluation workflow.
+- `tests/test_evaluation.py` — small tests for data loading and detection-cost metrics.
+- `requirements.txt` — dependencies for the current workflow.
 - `modules/` and `Library/` — original coursework implementations and utility functions.
 - `data/Train.txt`, `data/Test.txt` — supplied training and test splits.
 - `Report.pdf` — original coursework report.
