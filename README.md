@@ -55,6 +55,7 @@ The test split is a single held-out evaluation set. If you use it to choose a mo
 ## Repository contents
 
 - `main.py` — current leakage-safe comparison and evaluation workflow.
+- `legacy_main.py` — preserved original coursework script, including its historical experiment workflow; it is retained for reference and is not the recommended evaluation entry point.
 - `tests/test_evaluation.py` — small tests for data loading and detection-cost metrics.
 - `requirements.txt` — dependencies for the current workflow.
 - `modules/` and `Library/` — original coursework implementations and utility functions.
@@ -65,6 +66,6 @@ The revised workflow uses scikit-learn estimators and does not reproduce every p
 
 ## Data, report, and limitations
 
-This repository contains dataset files and a coursework report. Confirm the dataset's redistribution terms and any applicable university/course restrictions before using the repository as a public portfolio artifact. The source and licensing details have not been independently verified here.
+The eight-feature, binary-label format is consistent with the UCI HTRU2 pulsar-candidate dataset. If these split files are derived from HTRU2, cite Robert Lyon's dataset entry: [UCI Machine Learning Repository — HTRU2](https://archive.ics.uci.edu/dataset/372/htru2), DOI [10.24432/C5DK6R](https://doi.org/10.24432/C5DK6R). UCI lists HTRU2 under the Creative Commons Attribution 4.0 International (CC BY 4.0) license; retain attribution and the license link when redistributing derived data. The exact provenance of the repository's Train/Test split files has not been independently confirmed, so verify that they came from this dataset before asserting that the license applies to these exact files. Also check any applicable university/course restrictions on the report.
 
 This is an experimental classification project, not a production pulsar-analysis system. Results depend on the supplied split, preprocessing choices, classifier settings, and calibration protocol. The GMM implementation and model comparisons should be treated as a baseline rather than a tuned benchmark.
